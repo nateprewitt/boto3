@@ -10,6 +10,7 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
+import pytest
 
 import boto3.session
 
@@ -31,10 +32,9 @@ BLACKLIST = {
 }
 
 
-def test_all_collections():
-    # This generator yields test functions for every collection
-    # on every available resource, except those which have
-    # been blacklisted.
+def generate_all_collections():
+    # This generator yields every collection on every available resource,
+    # except those which have been blacklisted.
     session = boto3.session.Session()
     for service_name in session.get_available_resources():
         resource = session.resource(
@@ -47,8 +47,11 @@ def test_all_collections():
 
             value = getattr(resource, key)
             if isinstance(value, CollectionManager):
-                yield _test_collection, service_name, key, value
+                yield service_name, key, value
 
+@pytest.mark.parametrize(
+    "service_name,collection_name,collection", generate_all_collections()
+)
 def _test_collection(service_name, collection_name, collection):
     # Create a list of the first page of items. This tests that
     # a remote request can be made, the response parsed, and that

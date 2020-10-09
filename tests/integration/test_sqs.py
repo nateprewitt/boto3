@@ -33,8 +33,8 @@ class TestSQSResource(unittest.TestCase):
         # Get pre-populated resources and access attributes
         messages = queue.receive_messages(WaitTimeSeconds=1)
 
-        self.assertEqual(len(messages), 1)
+        assert len(messages) == 1
         self.addCleanup(messages[0].delete)
 
-        self.assertEqual(queue.url, messages[0].queue_url)
-        self.assertEqual('test', messages[0].body)
+        assert queue.url == messages[0].queue_url
+        assert messages[0].body == 'test'

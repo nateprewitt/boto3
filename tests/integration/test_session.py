@@ -31,16 +31,16 @@ class TestUserAgentCustomizations(unittest.TestCase):
     def test_client_user_agent(self):
         client = self.session.client('s3')
         client.list_buckets()
-        self.assertIn('Boto3', self.actual_user_agent)
-        self.assertIn('Botocore', self.actual_user_agent)
-        self.assertIn('Python', self.actual_user_agent)
+        assert 'Boto3' in self.actual_user_agent
+        assert 'Botocore' in self.actual_user_agent
+        assert 'Python' in self.actual_user_agent
         # We should *not* have any mention of resource
         # when using clients directly.
-        self.assertNotIn('Resource', self.actual_user_agent)
+        assert 'Resource' not in self.actual_user_agent
 
     def test_resource_user_agent_has_customization(self):
         resource = self.session.resource('s3')
         list(resource.buckets.all())
         # We should have customized the user agent for
         # resource calls with "Resource".
-        self.assertTrue(self.actual_user_agent.endswith(' Resource'))
+        assert self.actual_user_agent.endswith(' Resource')
